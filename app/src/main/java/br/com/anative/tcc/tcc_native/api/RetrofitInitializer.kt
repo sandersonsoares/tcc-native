@@ -3,6 +3,7 @@ package br.com.anative.tcc.tcc_native.api
 import android.content.Context
 import br.com.anative.tcc.tcc_native.api.interceptors.APIInterceptor
 import br.com.anative.tcc.tcc_native.api.services.IAuthService
+import br.com.anative.tcc.tcc_native.api.services.ITaskService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -24,4 +25,6 @@ class RetrofitInitializer {
         .build()
 
     fun authService(context: Context) = build(context).create(IAuthService::class.java)
+
+    fun taskService(context: Context) = build(context).create(ITaskService::class.java)
 }

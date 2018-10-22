@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ProgressBar
 import br.com.anative.tcc.tcc_native.R
-import br.com.anative.tcc.tcc_native.api.dto.LoginDTO
+import br.com.anative.tcc.tcc_native.model.Login
 import br.com.anative.tcc.tcc_native.api.response.AuthResponse
 import br.com.anative.tcc.tcc_native.api.response.ICallbackResponse
 import br.com.anative.tcc.tcc_native.api.services.AuthService
@@ -23,7 +23,7 @@ class LoginActivity : DefaultActivity() {
 
     private fun efetuarLogin() {
         progressbar.visibility = ProgressBar.VISIBLE
-        var login = LoginDTO(login.text.toString(), senha.text.toString())
+        var login = Login(login.text.toString(), senha.text.toString())
         AuthService().authentication(login, object : ICallbackResponse<AuthResponse> {
             override fun success(instance: AuthResponse) {
                 progressbar.visibility = ProgressBar.INVISIBLE

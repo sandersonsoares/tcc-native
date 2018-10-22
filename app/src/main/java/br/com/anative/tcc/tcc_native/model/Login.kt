@@ -1,6 +1,6 @@
-package br.com.anative.tcc.tcc_native.api.dto
+package br.com.anative.tcc.tcc_native.model
 
-data class LoginDTO(
+data class Login(
     var email: String? = null,
     var password: String? = null
 )

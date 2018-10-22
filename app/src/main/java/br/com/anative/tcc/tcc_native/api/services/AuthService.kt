@@ -3,8 +3,8 @@ package br.com.anative.tcc.tcc_native.api.services
 import android.content.Context
 import android.util.Log
 import br.com.anative.tcc.tcc_native.api.RetrofitInitializer
-import br.com.anative.tcc.tcc_native.api.dto.AccountDTO
-import br.com.anative.tcc.tcc_native.api.dto.LoginDTO
+import br.com.anative.tcc.tcc_native.model.Account
+import br.com.anative.tcc.tcc_native.model.Login
 import br.com.anative.tcc.tcc_native.api.response.AuthResponse
 import br.com.anative.tcc.tcc_native.api.response.DefaultResponse
 import br.com.anative.tcc.tcc_native.api.response.ICallbackResponse
@@ -17,7 +17,7 @@ class AuthService {
 
     val TAG = "AUTH-SERVICE"
 
-    fun authentication(login: LoginDTO, iCallbackResponse: ICallbackResponse<AuthResponse>? = null, context: Context) {
+    fun authentication(login: Login, iCallbackResponse: ICallbackResponse<AuthResponse>? = null, context: Context) {
 
         val service = RetrofitInitializer().authService(context)
         val call = service.authentication(login)
@@ -30,7 +30,7 @@ class AuthService {
                     response?.body()?.let {
                         val authResponse: AuthResponse = it
 
-                        if (authResponse.code.equals("000")){
+                        if (authResponse.code.equals("000")) {
                             SharedPreferencesUtil(context).token = authResponse.token
                         }
 
@@ -48,13 +48,13 @@ class AuthService {
     }
 
     fun registerAccount(
-        account: AccountDTO,
+        account: Account,
         iCallbackResponse: ICallbackResponse<DefaultResponse>? = null,
         context: Context
     ) {
 
         val service = RetrofitInitializer().authService(context)
-        val call = service.registerAccount(account)
+        val call = service.registerAccount(account.copy())
 
         call.enqueue(object : Callback<DefaultResponse?> {
 
