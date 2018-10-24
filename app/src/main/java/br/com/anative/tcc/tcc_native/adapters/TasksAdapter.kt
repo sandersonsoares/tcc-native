@@ -1,71 +1,40 @@
 package br.com.anative.tcc.tcc_native.adapters
 
-import android.app.Activity
+import android.content.Context
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.Adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
-import android.widget.ProgressBar
-import android.widget.TextView
 import br.com.anative.tcc.tcc_native.R
-import br.com.anative.tcc.tcc_native.api.response.ICallbackResponse
-import br.com.anative.tcc.tcc_native.api.response.TasksResponse
-import br.com.anative.tcc.tcc_native.api.services.TaskService
 import br.com.anative.tcc.tcc_native.model.Task
+import kotlinx.android.synthetic.main.task_row.view.*
 
-class TasksAdapter(private val activity: Activity) : BaseAdapter() {
+class TasksAdapter(private val list: List<Task>, private val context: Context) : Adapter<TasksAdapter.ViewHolder>() {
 
-    var list: List<Task>? = null
-    private val mInflator: LayoutInflater
-
-    init {
-        this.mInflator = LayoutInflater.from(activity)
-        dataUpdate()
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val task = list[position]
+        holder?.bindView(task)
     }
 
-    fun dataUpdate() {
-        var progressbar = activity.findViewById<ProgressBar>(R.id.progressbar)
-        progressbar.visibility = ProgressBar.VISIBLE
-
-        TaskService().list(object : ICallbackResponse<TasksResponse> {
-            override fun success(instance: TasksResponse) {
-                list = instance.tasks
-                // Ajusta alterações
-                this@TasksAdapter.notifyDataSetChanged()
-                // Seta invisible no progress bar
-                progressbar.visibility = ProgressBar.INVISIBLE
-            }
-        }, this.activity)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(context).inflate(R.layout.task_row, parent, false)
+        return ViewHolder(view)
     }
 
-    override fun getCount(): Int {
-        if (list == null) {
-            return 0
+    override fun getItemCount(): Int {
+        return list.size
+    }
+
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        fun bindView(task: Task) {
+            val title = itemView.note_item_title
+            val description = itemView.note_item_description
+
+            title.text = task.title
+            description.text = task.description
         }
-        return list!!.size
     }
 
-    override fun getItem(i: Int): Task? {
-        if (list == null) {
-            return null
-        }
-        return list!![i]
-    }
-
-    override fun getItemId(i: Int): Long {
-        return i.toLong()
-    }
-
-    override fun getView(i: Int, convertView: View?, parent: ViewGroup): View? {
-        val view: View?
-        if (convertView == null) {
-            view = this.mInflator.inflate(R.layout.task_row, parent, false)
-        } else {
-            view = convertView
-        }
-
-//        var label = view?.findViewById<TextView>(R.id.titulo)
-//        label?.text = "ID: " + getItem(i)?.id + " - " + getItem(i)?.nome
-        return view
-    }
 }

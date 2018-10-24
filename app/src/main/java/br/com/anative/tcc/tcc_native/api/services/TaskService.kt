@@ -63,11 +63,11 @@ class TaskService {
                     }
                 }
 
-                Log.i(TAG, "[INFO] create sucessfull")
+                Log.i(TAG, "[INFO] list sucessfull")
             }
 
             override fun onFailure(call: Call<TasksResponse?>?, t: Throwable?) {
-                Log.i(TAG, "[ERROR] create error")
+                Log.i(TAG, "[ERROR] list error")
             }
         })
     }
