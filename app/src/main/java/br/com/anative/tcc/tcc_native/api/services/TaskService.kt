@@ -7,6 +7,7 @@ import br.com.anative.tcc.tcc_native.api.response.DefaultResponse
 import br.com.anative.tcc.tcc_native.api.response.ICallbackResponse
 import br.com.anative.tcc.tcc_native.api.response.TasksResponse
 import br.com.anative.tcc.tcc_native.model.Task
+import br.com.anative.tcc.tcc_native.util.SharedPreferencesUtil
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -49,14 +50,16 @@ class TaskService {
         context: Context
     ) {
 
+        var sharedPreferencesUtil = SharedPreferencesUtil(context)
         val service = RetrofitInitializer().taskService(context)
-        val call = service.listAll()
+        val call = service.listAll(sharedPreferencesUtil.token.toString())
 
         call.enqueue(object : Callback<TasksResponse?> {
 
             override fun onResponse(call: Call<TasksResponse?>?, response: Response<TasksResponse?>?) {
 
                 if (iCallbackResponse != null) {
+                    Log.i(TAG, response?.code().toString())
                     response?.body()?.let {
                         val tasksResponse: TasksResponse = it
                         iCallbackResponse.success(tasksResponse)

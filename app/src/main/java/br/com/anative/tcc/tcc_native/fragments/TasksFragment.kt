@@ -8,71 +8,53 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.Toast
 import br.com.anative.tcc.tcc_native.R
-import br.com.anative.tcc.tcc_native.activities.HomeActivity
 import br.com.anative.tcc.tcc_native.adapters.TasksAdapter
 import br.com.anative.tcc.tcc_native.api.response.ICallbackResponse
 import br.com.anative.tcc.tcc_native.api.response.TasksResponse
 import br.com.anative.tcc.tcc_native.api.services.TaskService
 import br.com.anative.tcc.tcc_native.model.Task
-import br.com.anative.tcc.tcc_native.util.SharedPreferencesUtil
+import org.jetbrains.anko.indeterminateProgressDialog
 
 
 class TasksFragment : Fragment() {
 
-    var tasks: List<Task>? = null
+    var tasks: List<Task> = listOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         super.onCreate(savedInstanceState)
-        var fragment: View = inflater.inflate(R.layout.tasks_fragment, container, false)
-        var homeActivity = activity as HomeActivity
-        var sharedPreferencesUtil = SharedPreferencesUtil(homeActivity)
-        var progressBar = fragment.findViewById(R.id.progressbar) as ProgressBar
+        return inflater.inflate(R.layout.tasks_fragment, container, false)
+    }
 
-        progressBar.visibility = ProgressBar.VISIBLE
+    override fun onResume() {
+        val recyclerView = this.activity.findViewById(R.id.recyclerView) as RecyclerView
+        recyclerView.adapter = TasksAdapter(tasks.toList(), this.activity)
+        val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
+        recyclerView.layoutManager = layoutManager
+
+        var progressbar = indeterminateProgressDialog("Carregando...")
+        progressbar.setCancelable(false)
+        progressbar.setCanceledOnTouchOutside(false)
+        progressbar.show()
 
         TaskService().list(object : ICallbackResponse<TasksResponse> {
             override fun success(instance: TasksResponse) {
-                progressBar.visibility = ProgressBar.INVISIBLE
+                progressbar.dismiss()
                 if (instance.code.equals("000")) {
-                    tasks = instance.tasks
-
-                    System.out.println(tasks)
-
-                    val recyclerView = fragment.findViewById(R.id.list) as RecyclerView
-                    recyclerView.adapter = TasksAdapter(instance.tasks!!, homeActivity)
-                    val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
-                    recyclerView.layoutManager = layoutManager
-
+                    tasks = instance.tasks!!.toList()
+                    recyclerView.adapter = TasksAdapter(tasks, this@TasksFragment.activity)
                 } else {
-                    Toast.makeText(homeActivity, instance.message.toString(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@TasksFragment.activity, instance.message.toString(), Toast.LENGTH_SHORT).show()
                 }
             }
-        }, homeActivity)
 
-        return fragment
-    }
+        }, this.activity)
 
-    private fun tasks(): List<Task> {
-        return listOf(
-            Task(
-                title = "Leitura",
-                description = "Livro de Kotlin com Android"
-            ),
-            Task(
-                title = "Pesquisa",
-                description = "Como posso melhorar o código dos meus projetos"
-            ),
-            Task(
-                title = "Estudo",
-                description = "Como sincronizar minha App com um Web Service"
-            )
-        )
+        super.onResume()
     }
 
 

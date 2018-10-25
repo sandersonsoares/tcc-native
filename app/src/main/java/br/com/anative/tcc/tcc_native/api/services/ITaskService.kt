@@ -21,7 +21,7 @@ interface ITaskService {
     fun listFinished(): Call<TasksResponse>
 
     @GET("/api/task")
-    fun listAll(): Call<TasksResponse>
+    fun listAll(@Header("Authorization") token: String): Call<TasksResponse>
 
     @GET("/api/task/todo")
     fun listToDo(): Call<TasksResponse>
