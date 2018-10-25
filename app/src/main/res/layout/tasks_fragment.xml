@@ -1,24 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/swipeToRefresh"
+        android:id="@+id/task_swipeToRefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                 xmlns:tools="http://schemas.android.com/tools"
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                  android:layout_width="match_parent"
                  android:layout_height="match_parent"
-                 android:orientation="vertical">
+                 android:orientation="vertical"
+                 android:paddingHorizontal="12dp"
+                 android:paddingTop="5dp">
+
+        <android.support.design.widget.FloatingActionButton
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/buttonadd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_marginBottom="70dp"
+                app:backgroundTint="@color/colorPrimary"
+                android:src="@android:drawable/ic_input_add"
+                android:tint="#fff"/>
+
 
         <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
-    </LinearLayout>
+
+    </FrameLayout>
 
 
 </android.support.v4.widget.SwipeRefreshLayout>
