@@ -10,8 +10,6 @@ import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.Toast
 import br.com.anative.tcc.tcc_native.R
 import br.com.anative.tcc.tcc_native.adapters.TasksAdapter
 import br.com.anative.tcc.tcc_native.api.response.ICallbackResponse
@@ -62,6 +60,12 @@ class TasksFragment : Fragment() {
                 } else {
                     toast(instance.message.toString())
                 }
+                toast(instance.message.toString())
+            }
+
+            override fun error(instance: TasksResponse) {
+                progressbar.dismiss()
+                toast(instance.message.toString())
             }
 
         }, this.activity)
