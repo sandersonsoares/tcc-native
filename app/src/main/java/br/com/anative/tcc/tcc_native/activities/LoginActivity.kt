@@ -31,6 +31,7 @@ class LoginActivity : DefaultActivity() {
 
         var login = Login(login.text.toString(), senha.text.toString())
         AuthService().authentication(login, object : ICallbackResponse<AuthResponse> {
+
             override fun success(instance: AuthResponse) {
                 progressbar.dismiss()
                 if (instance.code.equals("000")) {
@@ -38,6 +39,11 @@ class LoginActivity : DefaultActivity() {
                 } else {
                     toast(instance.message.toString())
                 }
+            }
+
+            override fun error(instance: AuthResponse) {
+                progressbar.dismiss()
+                toast(instance.message.toString())
             }
         }, this)
 

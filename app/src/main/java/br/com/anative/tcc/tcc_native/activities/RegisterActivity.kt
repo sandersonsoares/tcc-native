@@ -1,15 +1,14 @@
 package br.com.anative.tcc.tcc_native.activities
 
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
-import android.widget.ProgressBar
 import br.com.anative.tcc.tcc_native.R
-import br.com.anative.tcc.tcc_native.model.Account
 import br.com.anative.tcc.tcc_native.api.response.DefaultResponse
 import br.com.anative.tcc.tcc_native.api.response.ICallbackResponse
 import br.com.anative.tcc.tcc_native.api.services.AuthService
+import br.com.anative.tcc.tcc_native.model.Account
 import kotlinx.android.synthetic.main.activity_register.*
+import org.jetbrains.anko.indeterminateProgressDialog
 
 class RegisterActivity : DefaultActivity() {
 
@@ -23,7 +22,10 @@ class RegisterActivity : DefaultActivity() {
     }
 
     private fun registerUser() {
-        progressbar.visibility = ProgressBar.VISIBLE
+        var progressbar = indeterminateProgressDialog("Carregando...")
+        progressbar.setCancelable(false)
+        progressbar.setCanceledOnTouchOutside(false)
+        progressbar.show()
 
         var account = Account(
             name.text.toString(),
@@ -32,14 +34,20 @@ class RegisterActivity : DefaultActivity() {
         )
         AuthService().registerAccount(account, object : ICallbackResponse<DefaultResponse> {
             override fun success(instance: DefaultResponse) {
-                progressbar.visibility = ProgressBar.INVISIBLE
+                progressbar.dismiss()
                 if (instance.code.equals("000")) {
                     toast(instance.message.toString())
                 } else {
                     toast(instance.message.toString())
                 }
             }
+
+            override fun error(instance: DefaultResponse) {
+                progressbar.dismiss()
+                toast(instance.message.toString())
+            }
         }, this)
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {

@@ -14,9 +14,7 @@ import br.com.anative.tcc.tcc_native.R
 import br.com.anative.tcc.tcc_native.adapters.TasksAdapter
 import br.com.anative.tcc.tcc_native.api.response.ICallbackResponse
 import br.com.anative.tcc.tcc_native.api.response.TasksResponse
-import br.com.anative.tcc.tcc_native.api.services.TaskService
 import br.com.anative.tcc.tcc_native.model.Task
-import org.jetbrains.anko.indeterminateProgressDialog
 import org.jetbrains.anko.toast
 
 
@@ -34,7 +32,7 @@ class TasksFragment : Fragment() {
         var swipeRefreshLayout = fragment.findViewById(R.id.task_swipeToRefresh) as SwipeRefreshLayout
         swipeRefreshLayout.setOnRefreshListener {
             swipeRefreshLayout.isRefreshing = false
-            onResume()
+            listarTasks()
         }
 
         var buttonadd = fragment.findViewById(R.id.buttonadd) as FloatingActionButton
@@ -42,37 +40,26 @@ class TasksFragment : Fragment() {
             adicionarTask()
         }
 
+        listarTasks()
+
         return fragment
     }
 
-    override fun onResume() {
-        var progressbar = indeterminateProgressDialog("Carregando...")
-        progressbar.setCancelable(false)
-        progressbar.setCanceledOnTouchOutside(false)
-        progressbar.show()
+    fun listarTasks() {
+        var adapter = TasksAdapter(tasks, this@TasksFragment.activity)
 
-        TaskService().list(object : ICallbackResponse<TasksResponse> {
+        adapter.listarTasks(object : ICallbackResponse<TasksResponse> {
             override fun success(instance: TasksResponse) {
-                progressbar.dismiss()
-                if (instance.code.equals("000")) {
-                    tasks = instance.tasks!!.toMutableList()
-                    buildReciclerView().adapter = TasksAdapter(tasks, this@TasksFragment.activity)
-                } else {
-                    toast(instance.message.toString())
-                }
-                toast(instance.message.toString())
+                tasks = instance.tasks!!.toMutableList()
+                buildReciclerView().adapter = adapter
             }
 
             override fun error(instance: TasksResponse) {
-                progressbar.dismiss()
                 toast(instance.message.toString())
             }
+        }, this@TasksFragment.activity)
 
-        }, this.activity)
-
-        super.onResume()
     }
-
 
     fun adicionarTask() {
         var task = Task()
@@ -80,13 +67,8 @@ class TasksFragment : Fragment() {
         buildReciclerView().adapter = TasksAdapter(tasks, this@TasksFragment.activity)
     }
 
-    fun removerTask() {
-
-    }
-
     private fun buildReciclerView(): RecyclerView {
-        val recyclerView = this.activity.findViewById(R.id.recyclerView) as RecyclerView
-        recyclerView.adapter = TasksAdapter(arrayListOf(), this.activity)
+        var recyclerView = this@TasksFragment.activity.findViewById(R.id.recyclerView) as RecyclerView
         val layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
         recyclerView.layoutManager = layoutManager
         return recyclerView

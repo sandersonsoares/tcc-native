@@ -1,7 +1,10 @@
 package br.com.anative.tcc.tcc_native.api.services
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
+import br.com.anative.tcc.tcc_native.activities.LoginActivity
+import br.com.anative.tcc.tcc_native.activities.MainActiviy
 import br.com.anative.tcc.tcc_native.api.RetrofitInitializer
 import br.com.anative.tcc.tcc_native.api.response.DefaultResponse
 import br.com.anative.tcc.tcc_native.api.response.ICallbackResponse
@@ -36,12 +39,26 @@ class TaskService {
                         val defaultResponse: DefaultResponse = it
                         iCallbackResponse.success(defaultResponse)
                     }
+                    if (response?.code() != 200) {
+                        var resposta = TasksResponse(null)
+                        resposta.code = response?.code().toString()
+                        resposta.message = response?.message().toString()
+                        iCallbackResponse.success(resposta)
+
+                        if (response?.code() == 401) {
+                            sharedPreferencesUtil.limpar()
+                            context.startActivity(Intent(context, MainActiviy::class.java))
+                        }
+                    }
                 }
 
                 Log.i(TAG, "[INFO] create sucessfull")
             }
 
             override fun onFailure(call: Call<DefaultResponse?>?, t: Throwable?) {
+                var resposta = TasksResponse(null)
+                resposta.message = t?.message.toString()
+                iCallbackResponse?.error(resposta)
                 Log.i(TAG, "[ERROR] create error")
             }
         })
@@ -66,13 +83,27 @@ class TaskService {
                         val defaultResponse: DefaultResponse = it
                         iCallbackResponse.success(defaultResponse)
                     }
+                    if (response?.code() != 200) {
+                        var resposta = TasksResponse(null)
+                        resposta.code = response?.code().toString()
+                        resposta.message = response?.message().toString()
+                        iCallbackResponse.success(resposta)
+
+                        if (response?.code() == 401) {
+                            sharedPreferencesUtil.limpar()
+                            context.startActivity(Intent(context, MainActiviy::class.java))
+                        }
+                    }
                 }
 
-                Log.i(TAG, "[INFO] create sucessfull")
+                Log.i(TAG, "[INFO] update sucessfull")
             }
 
             override fun onFailure(call: Call<DefaultResponse?>?, t: Throwable?) {
-                Log.i(TAG, "[ERROR] create error")
+                var resposta = TasksResponse(null)
+                resposta.message = t?.message.toString()
+                iCallbackResponse?.error(resposta)
+                Log.i(TAG, "[ERROR] update error")
             }
         })
     }
@@ -96,13 +127,27 @@ class TaskService {
                         val defaultResponse: DefaultResponse = it
                         iCallbackResponse.success(defaultResponse)
                     }
+                    if (response?.code() != 200) {
+                        var resposta = TasksResponse(null)
+                        resposta.code = response?.code().toString()
+                        resposta.message = response?.message().toString()
+                        iCallbackResponse.success(resposta)
+
+                        if (response?.code() == 401) {
+                            sharedPreferencesUtil.limpar()
+                            context.startActivity(Intent(context, MainActiviy::class.java))
+                        }
+                    }
                 }
 
-                Log.i(TAG, "[INFO] create sucessfull")
+                Log.i(TAG, "[INFO] remove sucessfull")
             }
 
             override fun onFailure(call: Call<DefaultResponse?>?, t: Throwable?) {
-                Log.i(TAG, "[ERROR] create error")
+                var resposta = TasksResponse(null)
+                resposta.message = t?.message.toString()
+                iCallbackResponse?.error(resposta)
+                Log.i(TAG, "[ERROR] remove error")
             }
         })
     }
@@ -118,11 +163,22 @@ class TaskService {
 
         call.enqueue(object : Callback<TasksResponse?> {
 
-            override fun onResponse(call: Call<TasksResponse?>?, response: Response<TasksResponse?>?) {
+            override fun onResponse(call: Call<TasksResponse?>?, response: Response<TasksResponse?>) {
 
                 if (iCallbackResponse != null) {
                     response?.body()?.let {
                         iCallbackResponse.success(it)
+                    }
+                    if (response.code() != 200) {
+                        var resposta = TasksResponse(null)
+                        resposta.code = response.code().toString()
+                        resposta.message = response.message().toString()
+                        iCallbackResponse.success(resposta)
+
+                        if (response.code() == 401) {
+                            sharedPreferencesUtil.limpar()
+                            context.startActivity(Intent(context, MainActiviy::class.java))
+                        }
                     }
                 }
 
@@ -130,7 +186,9 @@ class TaskService {
             }
 
             override fun onFailure(call: Call<TasksResponse?>?, t: Throwable?) {
-                context.toast(t!!.message.toString())
+                var resposta = TasksResponse(null)
+                resposta.message = t?.message.toString()
+                iCallbackResponse?.error(resposta)
                 Log.i(TAG, "[ERROR] list error")
             }
         })
